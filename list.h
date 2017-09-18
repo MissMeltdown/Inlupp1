@@ -1,4 +1,3 @@
-
 /// !! OBS -- du skall inte ändra i denna fil, med ETT undantag:
 /// !! du skall ändra i typedef av L så att det passar ditt program.
 
@@ -111,8 +110,7 @@ L *list_last(list_t *list);
 /// \returns the length of list
 int list_length(list_t *list);
 
-/*
-//////////// ================= Added in version 1.2 
+/*/////////// ================= Added in version 1.2 
 ///
 /// NOTE: Implementing these functions is NOT mandatory
 ///
@@ -135,6 +133,6 @@ typedef void(*list_action2)(L elem, void *data);
 /// \param fun the function to apply to all elements
 /// \param data an extra argument passed to each call to fun (may be NULL)
 void list_apply(list_t *list, list_action2 fun, void *data);
-
 */
+
 #endif

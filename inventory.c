@@ -23,7 +23,7 @@ struct item {
 
 void print_menu() {
   printf("\nVar god gör ett val ur menyn:\n"
-	 "[L]ägga till en vara\n"
+	 "[L]ägg till en vara\n"
 	 "[T]a bort en vara\n"
 	 "[R]edigera en vara\n"
 	 "Ån[g]ra senaste ändringen\n"
@@ -33,13 +33,11 @@ void print_menu() {
 
 
 char ask_question_menu() {
-  int bufSize = 10;
+  int bufSize = 100;
   char buf[bufSize];
-  int x = 0;
-  char choice;
   print_menu();
-  x = read_string(buf, bufSize);
-  choice = toupper(buf[0]);
+  int x = read_string(buf, bufSize);
+  char choice = toupper(buf[0]);
 
   while (x != 1 || strchr("LTRGHA", choice) == NULL) {
     printf("Felaktig inmatning: '%s'\n", buf);
@@ -58,7 +56,7 @@ item_t make_item(char *name, char *desc, int price, char *shelfname, int amount)
   return (item_t) {.name = name, .desc = desc, .price = price, .shelfs = shelflist}; 
 }
 
-bool ok_shelf(char *str) {
+bool shelf_is_valid(char *str) {
   int x = strlen(str);
   if (x < 2) return false;
   for (int i=1; i<x; i++) if (!isdigit(str[i])) return false;
@@ -67,7 +65,7 @@ bool ok_shelf(char *str) {
 }
 
 char *ask_question_shelf(char *question) {
-  return ask_question(question, ok_shelf, (convert_func) strdup).s;
+  return ask_question(question, shelf_is_valid, (convert_func) strdup).s;
 }
 
 bool shelf_exists(char* str) {
@@ -80,36 +78,37 @@ void add_item_to_db(tree_t *db) {
   int amount;
   int price;
   item_t *item;
-  list_t *list; 
-  char *name = ask_question_string("Namn:");
+  list_t *list;
+  println("Lägg till en ny vara");
+  char *name = ask_question_string("Namn: ");
   if (tree_has_key(db, name)) {
     printf("%s finns redan i databasen.\n"
-	   "Använder samma pris och beskrivning", name);
+	   "Använder samma pris och beskrivning\n", name);
     item = tree_get(db, name);
     price = item -> price;
     desc = item -> desc;
     list = item -> shelfs;
-    shelfname = ask_question_shelf("Hylla:");
+    shelfname = ask_question_shelf("Hylla: ");
     
     while (shelf_exists(shelfname)) {
       printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
-      shelfname = ask_question_shelf("Hylla:");      
+      shelfname = ask_question_shelf("Hylla: ");      
     }
-    amount = ask_question_int("Antal:");
+    amount = ask_question_int("Antal: ");
     shelf_t elem = {.shelfname = shelfname, .amount = amount};
     list_append(list, &elem); 
     
   } else {
-    desc  = ask_question_string("Beskrivning:");
-    price = ask_question_int("Pris:");
-    shelfname = ask_question_shelf("Hylla:");
+    desc  = ask_question_string("Beskrivning: ");
+    price = ask_question_int("Pris: ");
+    shelfname = ask_question_shelf("Hylla: ");
 
     while (shelf_exists(shelfname)) {
       printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
-      shelfname = ask_question_shelf("Hylla:");      
+      shelfname = ask_question_shelf("Hylla: ");      
     }
     
-    amount = ask_question_int("Antal:");
+    amount = ask_question_int("Antal: ");
     item_t newitem = make_item(name, desc, price, shelfname, amount);
     tree_insert(db, name, &newitem);
   }
@@ -126,22 +125,17 @@ void event_loop(tree_t *db) {
   while (true) {
     char command = ask_question_menu();
     if (command == 'L') {
-      printf("L");
-    add_item_to_db(db);
+      add_item_to_db(db);
     } else if (command == 'T') {
-      printf("T");
       remove_item_from_db(db); 
     } else if (command == 'R') {
-      printf("R");
-    //edit_db(db); 
+      //edit_db(db);
     } else if (command == 'G') {
       //undo();
-      printf("G");
     } else if (command == 'H') {
       //list_db(db);
-    printf("H");
     } else {
-      printf("Avslutar.\n");
+      printf("Avslutar\n");
       return; 
     }
   }

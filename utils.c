@@ -15,8 +15,8 @@ int read_string(char *buf, int buf_siz) {
   int c;
   do {
     c = getchar();
-      buf[count] = c;
-      count++;
+    buf[count] = c;
+    count++;
   } while (c != '\n' && c != EOF && count < buf_siz);
 
   while (c != '\n' && c != EOF) {
@@ -46,18 +46,17 @@ answer_t ask_question(char *question, check_func check, convert_func convert) {
   char result[255];
   int l = 0;
   print(question);
-  putchar(' '); 
   l = read_string(result, 255);
   
   while (l<1 || !check(result)) {
     printf("Felaktig inmatning: '%s'\n", result);
     print(question);
-    putchar(' ');
     l = read_string(result, 255);
   }
   
   return convert(result);
 }
+
 bool is_char (char *str) {
   if (strlen(str) != 1) {
     return false;
@@ -73,7 +72,7 @@ char *ask_question_string(char *question) {
 }
 
 int ask_question_int(char *question) {
-  return (ask_question(question, is_number, (convert_func) atoi).i); 
+  return ask_question(question, is_number, (convert_func) atoi).i; 
 }
 
 char ask_question_char(char *question) {
