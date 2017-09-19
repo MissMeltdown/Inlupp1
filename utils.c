@@ -76,5 +76,5 @@ int ask_question_int(char *question) {
 }
 
 char ask_question_char(char *question) {
-  return ask_question(question, is_char, (convert_func) strdup).c;
+  return ask_question(question, is_char, (convert_func) strdup).s[0];
 }

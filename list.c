@@ -5,6 +5,7 @@
 #include "list.h"
 
 typedef struct link link_t;
+typedef struct list list_t;
 //typedef void(*list_action)(L elem);
 
 struct list {
@@ -29,10 +30,15 @@ void list_append(list_t *list, L elem) {
     l -> data = elem;
   }
 
+  printf("tre\n");
   if (list -> first) {
+  printf("fyra\n");
     list -> last -> next = l;
+  printf("fem\n");
   } else {
+  printf("sex\n");
     list -> first = l;
+  printf("sju\n");
   }
   
   list -> last = l;
@@ -182,7 +188,17 @@ int main(int argc, char *argv[]) {
     printf("%s\n", argv[i]);
   }
   list_t *l = list_new();
-  list_append(l, 6);
-  return 0; 
-}
-*/
+  int a = 6;
+  list_append(l, &a);
+  int b = 7;
+  list_append(l, &b);
+  link_t *f = l -> first;
+  for (int i=0; i<2; i++)
+    {
+      int *x = f->data;
+      printf("%d\n", *x);
+      f = f->next;
+    }
+  
+  return 0;
+}*/

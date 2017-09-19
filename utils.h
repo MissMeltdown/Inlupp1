@@ -13,7 +13,6 @@ typedef union {
   int   i;
   float f;
   char *s;
-  char  c; 
 } answer_t;
 
 typedef bool(*check_func)(char *);

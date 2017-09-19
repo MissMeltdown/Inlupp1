@@ -22,8 +22,7 @@ struct item {
 };
 
 void print_menu() {
-  printf("\nVar god gör ett val ur menyn:\n"
-	 "[L]ägg till en vara\n"
+  printf("\n[L]ägg till en vara\n"
 	 "[T]a bort en vara\n"
 	 "[R]edigera en vara\n"
 	 "Ån[g]ra senaste ändringen\n"
@@ -33,20 +32,14 @@ void print_menu() {
 
 
 char ask_question_menu() {
-  int bufSize = 100;
-  char buf[bufSize];
   print_menu();
-  int x = read_string(buf, bufSize);
-  char choice = toupper(buf[0]);
-
-  while (x != 1 || strchr("LTRGHA", choice) == NULL) {
-    printf("Felaktig inmatning: '%s'\n", buf);
-    print_menu();
-    x = read_string(buf, bufSize);
-    choice = toupper(buf[0]);
-  }
+  char input = ask_question_char("Vad vill du göra? ");
   
-  return choice;
+  while (strchr("LlTtRrGgHhAa", input) == NULL) {
+    printf("Felaktig inmatning: '%c'\n", input);
+    input = ask_question_char("Vad vill du göra? ");
+  }
+  return toupper(input);
 }
 
 item_t make_item(char *name, char *desc, int price, char *shelfname, int amount) {
@@ -59,6 +52,7 @@ item_t make_item(char *name, char *desc, int price, char *shelfname, int amount)
 bool shelf_is_valid(char *str) {
   int x = strlen(str);
   if (x < 2) return false;
+  if (isdigit(str[0])) return false;
   for (int i=1; i<x; i++) if (!isdigit(str[i])) return false;
 
   return true;
@@ -72,6 +66,21 @@ bool shelf_exists(char* str) {
   return false;
 }
 
+void print_item(item_t *item) {
+  char *name = item -> name;
+  char *desc = item -> desc;
+  int price = item -> price;
+  list_t *list = item -> shelfs;
+  
+  printf("\nNamn: %s\n", name);
+  printf("Beskrivning: %s\n", desc);
+  printf("Pris: %d\n", price);
+  
+  link_t *link = list -> first; //hur gör man??
+
+  
+}
+
 void add_item_to_db(tree_t *db) {
   char *desc;
   char *shelfname;
@@ -79,11 +88,11 @@ void add_item_to_db(tree_t *db) {
   int price;
   item_t *item;
   list_t *list;
-  println("Lägg till en ny vara");
+  println("\nLägg till en ny vara\n");
   char *name = ask_question_string("Namn: ");
   if (tree_has_key(db, name)) {
     printf("%s finns redan i databasen.\n"
-	   "Använder samma pris och beskrivning\n", name);
+	   "Använder samma pris och beskrivning.\n", name);
     item = tree_get(db, name);
     price = item -> price;
     desc = item -> desc;
@@ -96,7 +105,8 @@ void add_item_to_db(tree_t *db) {
     }
     amount = ask_question_int("Antal: ");
     shelf_t elem = {.shelfname = shelfname, .amount = amount};
-    list_append(list, &elem); 
+    
+    list_append(list, &elem); //---------------det blir segmentation fault 11 i list_append...
     
   } else {
     desc  = ask_question_string("Beskrivning: ");
@@ -110,6 +120,19 @@ void add_item_to_db(tree_t *db) {
     
     amount = ask_question_int("Antal: ");
     item_t newitem = make_item(name, desc, price, shelfname, amount);
+    /*
+    do {
+      print_item(newitem);
+      char jnr = toupper(ask_question_char("Vill du lägga till varan? ([J]a, [N]ej, [R]edigera) "));
+      if (jnr == 'J') {
+        tree_insert(db, name, &newitem);
+      } else if (jnr == 'N') {
+        return;
+      } else if (jnr == 'R') {
+        newitem = edit_item(newitem);
+      }
+    } while (strchr("JNR", jnr) == NULL)
+    */
     tree_insert(db, name, &newitem);
   }
 }
@@ -134,7 +157,7 @@ void event_loop(tree_t *db) {
       //undo();
     } else if (command == 'H') {
       //list_db(db);
-    } else {
+    } else if (command == 'A'){
       printf("Avslutar\n");
       return; 
     }
@@ -143,7 +166,7 @@ void event_loop(tree_t *db) {
 
 
 int main(void) {
-  println("Välkommen till lagerhantering 1.0");
+  println("\nVälkommen till lagerhantering 1.0");
   println("=================================");
   tree_t *db = tree_new();
   event_loop(db);
