@@ -190,12 +190,13 @@ void list_db(tree_t *db) {
     char **namn = tree_keys(db);
     
     for (int i=0; i<length; i++) {
-      printf("before\n");
-      printf("%s ", *namn);
-      printf("after\n");
+      printf("%s ", namn[i]);
       
     }
+
+    free(*namn);
   }
+  
 }
 
 void event_loop(tree_t *db) {

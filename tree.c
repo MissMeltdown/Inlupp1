@@ -230,22 +230,22 @@ void tree_keys_rec(node_t *node, K buf[], int *pos) {
   node_t *rightnode = node -> right;
   K key = node -> key;
 
-  if (leftnode) tree_keys_rec(leftnode, buf, pos);
+  if (rightnode) tree_keys_rec(rightnode, buf, pos);
   
   buf[*pos] = key;
   ++*pos;
   
-  if (rightnode) tree_keys_rec(rightnode, buf, pos);
+  if (leftnode) tree_keys_rec(leftnode, buf, pos);
 }
 
 K *tree_keys(tree_t *tree) {
-  int size = tree_size(tree);
-  K buf[size];
+  K *buf = calloc(1, sizeof(K));
   node_t *topnode = tree -> topnode;
   int pos = 0;
   tree_keys_rec(topnode, buf, &pos);
   
-  return (K *) (strdup(*buf));
+  return buf;
+  //return (K *) (strdup(*buf));
 }
 
 void tree_elements_rec(node_t *node, T buf[], int *pos) {
