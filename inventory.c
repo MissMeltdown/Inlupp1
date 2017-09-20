@@ -145,8 +145,12 @@ void add_item_to_db(tree_t *db) {
 
 
 void remove_item_from_db(tree_t *db) {
-  char *key = ask_question_string("Vilken vara vill du ta bort? \n"); 
-  tree_remove(db, key);
+  if (tree_size(db) < 1) {
+    printf("Databasen är tom, det finns inga varor att ta bort\n");
+  } else {
+    char *key = ask_question_string("Vilken vara vill du ta bort? \n");
+    tree_remove(db, key);
+  }
   //return tree_remove(db, key); --------------------------FIX LATER!
 }
 
@@ -156,7 +160,11 @@ void funktion(K key, T elem, void *data) {
 }
 
 void list_db(tree_t *db) {
-  tree_apply(db, inorder, funktion, NULL);
+  if (tree_size(db) < 1) {
+    printf("Databasen är tom, det finns inga varor att lista\n");
+  } else {
+    tree_apply(db, inorder, funktion, NULL);
+  }
 }
 
 void event_loop(tree_t *db) {
