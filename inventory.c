@@ -127,7 +127,7 @@ void add_item_to_db(tree_t *db) {
     }
     amount = ask_question_int("Antal: ");
     shelf_t *elem = make_shelf(shelfname, amount);
-    list_append(list, elem); //---------------det blir segmentation fault 11 i list_append...
+    list_append(list, elem);
     
   } else {
     desc  = ask_question_string("Beskrivning: ");
@@ -146,6 +146,7 @@ void add_item_to_db(tree_t *db) {
       print_item(newitem);
       jnr = toupper(ask_question_char("Vill du lägga till varan? ([J]a, [N]ej, [R]edigera) "));
       printf("%c\n", jnr);
+   
       if (jnr == 'J') {
         tree_insert(db, name, newitem);
       } else if (jnr == 'N') {
@@ -154,8 +155,6 @@ void add_item_to_db(tree_t *db) {
         //newitem = edit_item(newitem);
       }
     } while (strchr("JNR", jnr) == NULL);
-    
-      //tree_insert(db, name, &newitem);
   }
 }
 
@@ -169,16 +168,33 @@ void remove_item_from_db(tree_t *db) {
   //return tree_remove(db, key); --------------------------FIX LATER!
 }
 
-void funktion(K key, T elem, void *data) {
+void edit_db(tree_t *db)
+{
+  
+}
+
+void list_db_2(K key, T elem, void *data) {
   print_item(elem);
   printf("\n");
 }
 
 void list_db(tree_t *db) {
-  if (tree_size(db) < 1) {
+  /*if (tree_size(db) < 1) {
     printf("Databasen är tom, det finns inga varor att lista\n");
   } else {
-    tree_apply(db, inorder, funktion, NULL);
+    
+    tree_apply(db, inorder, list_db_2, NULL);
+    }*/
+  int length = tree_size(db);
+  if (length > 0) {
+    char **namn = tree_keys(db);
+    
+    for (int i=0; i<length; i++) {
+      printf("before\n");
+      printf("%s ", *namn);
+      printf("after\n");
+      
+    }
   }
 }
 
@@ -190,7 +206,7 @@ void event_loop(tree_t *db) {
     } else if (command == 'T') {
       remove_item_from_db(db); 
     } else if (command == 'R') {
-      //edit_db(db);
+      edit_db(db);
     } else if (command == 'G') {
       //undo();
     } else if (command == 'H') {
