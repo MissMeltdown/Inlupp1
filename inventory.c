@@ -30,7 +30,6 @@ void print_menu() {
 	 "[A]vsluta\n\n");
 }
 
-
 char ask_question_menu() {
   print_menu();
   char input = ask_question_char("Vad vill du göra? ");
@@ -42,11 +41,29 @@ char ask_question_menu() {
   return toupper(input);
 }
 
-item_t make_item(char *name, char *desc, int price, char *shelfname, int amount) {
+shelf_t *make_shelf(char *shelfname, int amount) {
+  shelf_t *s = malloc(sizeof(shelf_t));
+  if (s) {
+    s -> shelfname = shelfname;
+    s -> amount = amount;
+  }
+  return s;
+}
+
+item_t *make_item(char *name, char *desc, int price, char *shelfname, int amount) {
   list_t *shelflist = list_new();
-  shelf_t shelf = {.shelfname = shelfname, .amount = amount};
-  list_append(shelflist, &shelf);
-  return (item_t) {.name = name, .desc = desc, .price = price, .shelfs = shelflist}; 
+  shelf_t *shelf = make_shelf(shelfname, amount);
+
+  list_append(shelflist, shelf);
+
+  item_t *i = malloc(sizeof(item_t));
+  if (i) {
+    i -> name = name;
+    i -> desc = desc;
+    i -> price = price;
+    i -> shelfs = shelflist;
+  }
+  return i; 
 }
 
 bool shelf_is_valid(char *str) {
@@ -109,9 +126,8 @@ void add_item_to_db(tree_t *db) {
       shelfname = ask_question_shelf("Hylla: ");      
     }
     amount = ask_question_int("Antal: ");
-    shelf_t elem = {.shelfname = shelfname, .amount = amount}; 
-    
-    list_append(list, &elem); //---------------det blir segmentation fault 11 i list_append...
+    shelf_t *elem = make_shelf(shelfname, amount);
+    list_append(list, elem); //---------------det blir segmentation fault 11 i list_append...
     
   } else {
     desc  = ask_question_string("Beskrivning: ");
@@ -124,14 +140,14 @@ void add_item_to_db(tree_t *db) {
     }
     
     amount = ask_question_int("Antal: ");
-    item_t newitem = make_item(name, desc, price, shelfname, amount);
+    item_t *newitem = make_item(name, desc, price, shelfname, amount);
     char jnr = 'k';
     do {
-      print_item(&newitem);
+      print_item(newitem);
       jnr = toupper(ask_question_char("Vill du lägga till varan? ([J]a, [N]ej, [R]edigera) "));
       printf("%c\n", jnr);
       if (jnr == 'J') {
-        tree_insert(db, name, &newitem);
+        tree_insert(db, name, newitem);
       } else if (jnr == 'N') {
         return;
       } else if (jnr == 'R') {
@@ -142,7 +158,6 @@ void add_item_to_db(tree_t *db) {
       //tree_insert(db, name, &newitem);
   }
 }
-
 
 void remove_item_from_db(tree_t *db) {
   if (tree_size(db) < 1) {
