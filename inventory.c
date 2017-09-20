@@ -75,10 +75,15 @@ void print_item(item_t *item) {
   printf("\nNamn: %s\n", name);
   printf("Beskrivning: %s\n", desc);
   printf("Pris: %d\n", price);
-  
-  link_t *link = list -> first; //hur gör man??
 
-  
+  int l = list_length(list);
+  printf("%d\n", l);
+  for (int i=0; i<l; i++) {
+    shelf_t *p = *list_get(list, i);
+    char *shelf = p -> shelfname;
+    int antal = p -> amount;
+    printf("Hylla: %s, Antal: %d\n", shelf, antal);
+  }
 }
 
 void add_item_to_db(tree_t *db) {
@@ -104,7 +109,7 @@ void add_item_to_db(tree_t *db) {
       shelfname = ask_question_shelf("Hylla: ");      
     }
     amount = ask_question_int("Antal: ");
-    shelf_t elem = {.shelfname = shelfname, .amount = amount};
+    shelf_t elem = {.shelfname = shelfname, .amount = amount}; 
     
     list_append(list, &elem); //---------------det blir segmentation fault 11 i list_append...
     
@@ -144,6 +149,15 @@ void remove_item_from_db(tree_t *db) {
   //return tree_remove(db, key); --------------------------FIX LATER!
 }
 
+void funktion(K key, T elem, void *data) {
+  print_item(elem);
+  printf("\n");
+}
+
+void list_db(tree_t *db) {
+  tree_apply(db, inorder, funktion, NULL);
+}
+
 void event_loop(tree_t *db) {
   while (true) {
     char command = ask_question_menu();
@@ -156,7 +170,7 @@ void event_loop(tree_t *db) {
     } else if (command == 'G') {
       //undo();
     } else if (command == 'H') {
-      //list_db(db);
+      list_db(db);
     } else if (command == 'A'){
       printf("Avslutar\n");
       return; 

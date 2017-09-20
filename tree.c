@@ -279,11 +279,11 @@ void tree_apply_rec(node_t *node, enum tree_order order, tree_action2 fun, void 
 
   if (order == preorder) fun(key, elem, data);
 
-  if (leftnode) tree_apply_rec(node, order, fun, data);
+  if (leftnode) tree_apply_rec(leftnode, order, fun, data);
 
   if (order == inorder) fun(key, elem, data);
 
-  if (rightnode) tree_apply_rec(node, order, fun, data);
+  if (rightnode) tree_apply_rec(rightnode, order, fun, data);
 
   if (order == postorder) fun(key, elem, data);
 }

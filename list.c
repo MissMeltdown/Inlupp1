@@ -30,15 +30,10 @@ void list_append(list_t *list, L elem) {
     l -> data = elem;
   }
 
-  printf("tre\n");
   if (list -> first) {
-  printf("fyra\n");
     list -> last -> next = l;
-  printf("fem\n");
   } else {
-  printf("sex\n");
     list -> first = l;
-  printf("sju\n");
   }
   
   list -> last = l;
@@ -47,13 +42,11 @@ void list_append(list_t *list, L elem) {
 void list_prepend(list_t *list, L elem) {
   link_t *l = malloc(sizeof(link_t));
   if (l) {
-    l -> next = NULL;
+    l -> next = list -> first;
     l -> data = elem;
   }
-
-  if (list -> first) {
-    l -> next = list -> first;
-  } else {
+  
+  if (!list -> first) {
     list -> last = l;
   }
   
@@ -182,7 +175,8 @@ typedef void(*list_action2)(L elem, void *data) {
 void list_apply(list_t *list, list_action2 fun, void *data) {
   
 }
-
+*/
+/*
 int main(int argc, char *argv[]) {
   for (int i = 0; i < argc; i++) {
     printf("%s\n", argv[i]);
@@ -192,7 +186,9 @@ int main(int argc, char *argv[]) {
   list_append(l, &a);
   int b = 7;
   list_append(l, &b);
+  
   link_t *f = l -> first;
+  
   for (int i=0; i<2; i++)
     {
       int *x = f->data;
@@ -201,4 +197,4 @@ int main(int argc, char *argv[]) {
     }
   
   return 0;
-}*/
+  }*/
