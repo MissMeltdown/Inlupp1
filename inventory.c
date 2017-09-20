@@ -71,13 +71,12 @@ void print_item(item_t *item) {
   char *desc = item -> desc;
   int price = item -> price;
   list_t *list = item -> shelfs;
-  
   printf("\nNamn: %s\n", name);
   printf("Beskrivning: %s\n", desc);
   printf("Pris: %d\n", price);
 
   int l = list_length(list);
-  printf("%d\n", l);
+  
   for (int i=0; i<l; i++) {
     shelf_t *p = *list_get(list, i);
     char *shelf = p -> shelfname;
@@ -102,6 +101,7 @@ void add_item_to_db(tree_t *db) {
     price = item -> price;
     desc = item -> desc;
     list = item -> shelfs;
+    
     shelfname = ask_question_shelf("Hylla: ");
     
     while (shelf_exists(shelfname)) {
@@ -125,20 +125,21 @@ void add_item_to_db(tree_t *db) {
     
     amount = ask_question_int("Antal: ");
     item_t newitem = make_item(name, desc, price, shelfname, amount);
-    /*
+    char jnr = 'k';
     do {
-      print_item(newitem);
-      char jnr = toupper(ask_question_char("Vill du lägga till varan? ([J]a, [N]ej, [R]edigera) "));
+      print_item(&newitem);
+      jnr = toupper(ask_question_char("Vill du lägga till varan? ([J]a, [N]ej, [R]edigera) "));
+      printf("%c\n", jnr);
       if (jnr == 'J') {
         tree_insert(db, name, &newitem);
       } else if (jnr == 'N') {
         return;
       } else if (jnr == 'R') {
-        newitem = edit_item(newitem);
+        //newitem = edit_item(newitem);
       }
-    } while (strchr("JNR", jnr) == NULL)
-    */
-    tree_insert(db, name, &newitem);
+    } while (strchr("JNR", jnr) == NULL);
+    
+      //tree_insert(db, name, &newitem);
   }
 }
 

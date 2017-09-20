@@ -19,7 +19,11 @@ struct link {
 };
 
 list_t *list_new() {
-  list_t *l = calloc(1, sizeof(list_t));
+  list_t *l = malloc(sizeof(list_t));
+  if (l) {
+    l -> first = NULL;
+    l -> last = NULL;
+  }
   return l;
 }
 
@@ -139,7 +143,7 @@ L *list_get(list_t *list, int index) {
   }
   
   link_t *cursor = list -> first;
-  for (int i=0; i<=index; i++) {
+  for (int i=0; i<index; i++) {
     cursor = cursor -> next;
   }
   
