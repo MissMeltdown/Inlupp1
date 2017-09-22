@@ -32,7 +32,10 @@ void print_menu() {
 
 char ask_question_menu() {
   print_menu();
-  char input = ask_question_char("Vad vill du göra? ");
+  //char input = ask_question_char("Vad vill du göra? ");
+  char buf[100];
+  read_string(buf, 100);
+  char input = buf[0];
   
   while (strchr("LlTtRrGgHhAa", input) == NULL) {
     printf("Felaktig inmatning: '%c'\n", input);
@@ -142,19 +145,19 @@ void add_item_to_db(tree_t *db) {
     amount = ask_question_int("Antal: ");
     item_t *newitem = make_item(name, desc, price, shelfname, amount);
     char jnr = 'k';
-    do {
+    while (true) {
       print_item(newitem);
       jnr = toupper(ask_question_char("Vill du lägga till varan? ([J]a, [N]ej, [R]edigera) "));
-      printf("%c\n", jnr);
-   
       if (jnr == 'J') {
         tree_insert(db, name, newitem);
+        return;
       } else if (jnr == 'N') {
         return;
       } else if (jnr == 'R') {
         //newitem = edit_item(newitem);
+        return;
       }
-    } while (strchr("JNR", jnr) == NULL);
+    }
   }
 }
 
@@ -179,24 +182,62 @@ void list_db_2(K key, T elem, void *data) {
 }
 
 void list_db(tree_t *db) {
-  /*if (tree_size(db) < 1) {
+  int length = tree_size(db);
+  int sida = 1;
+  int per_sida = 2;
+  
+  if (length < 1) {
     printf("Databasen är tom, det finns inga varor att lista\n");
   } else {
-    
-    tree_apply(db, inorder, list_db_2, NULL);
-    }*/
-  int length = tree_size(db);
-  if (length > 0) {
     char **namn = tree_keys(db);
-    
-    for (int i=0; i<length; i++) {
-      printf("%s ", namn[i]);
-      
-    }
+    int i=1;
+    while (true) {
+      printf("\nAlla varor, sida %d\n", sida);
 
-    free(*namn);
+      //--------------
+      for (i=1; i<=length; i++)
+        {
+          printf("%d. %s\n", i, namn[i-1]);
+        }
+      printf("\n");
+
+      //--------------
+      
+      for (i=1; (sida-1)*per_sida + i-1<length && i<=per_sida; i++) {
+        printf("\n%d. %s", i, namn[(sida-1)*per_sida + i-1]);
+      }
+      
+      printf("\n\n[S]e en vara\n");
+      
+      if (length > sida*per_sida) { //if (Det finns en till sida)
+        printf("[N]ästa sida\n");
+      }
+      if (sida > 1) { //if (Det finns en föregående sida)
+        printf("[F]öregående sida\n");
+      }
+      printf("[A]vbryt\n");
+      char val = toupper(ask_question_char("Vad vill du göra? "));
+      if (val == 'S') {
+        break;
+      } else if (val == 'N' && length > sida*per_sida) {
+        sida++;
+      } else if (val == 'F' && sida > 1) {
+        sida--;
+      } else if (val == 'A') {
+        free(namn);
+        return;
+      }
+    }
+    int vara = ask_question_int("Vilken vara vill du se? Välj siffra: ");
+    while ((sida-1)*per_sida + vara-1 >= length || (sida-1)*per_sida + vara-1 < 0) {
+      vara = ask_question_int("Vilken vara vill du se? Välj siffra: ");
+    }
+    char *key = namn[(sida-1)*per_sida + vara-1];
+    item_t *item = tree_get(db, key);
+    print_item(item);
+    
+    free(namn);
   }
-  
 }
 
 void event_loop(tree_t *db) {
