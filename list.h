@@ -7,16 +7,17 @@
 
 #include <stdbool.h>
 
+/// Change this definition and replace int with the appropriate type
+/// in your program. 
+typedef void *L;
+
 /// This function is used in list_delete() to allow the lists which are
 /// the sole owners of their data to free the data on delete.
-//typedef void(*list_action)(L elem);
+typedef void(*list_action)(L elem);
 
 /// Define struct list in your .c file not here! (why?)
 typedef struct list list_t;
 
-/// Change this definition and replace int with the appropriate type
-/// in your program. 
-typedef void *L;
 
 /// \file list.h
 ///
@@ -110,7 +111,7 @@ L *list_last(list_t *list);
 /// \returns the length of list
 int list_length(list_t *list);
 
-/*/////////// ================= Added in version 1.2 
+/////////// ================= Added in version 1.2 
 ///
 /// NOTE: Implementing these functions is NOT mandatory
 ///
@@ -122,7 +123,7 @@ int list_length(list_t *list);
 ///        argument, to be used to free memory. If this param is 
 ///        NULL, no cleanup of keys or elements will happen.
 void list_delete(list_t *list, list_action cleanup);
-
+/*
 /// This function is used in list_apply() to allow applying a function
 /// to all elements in a list
 typedef void(*list_action2)(L elem, void *data);

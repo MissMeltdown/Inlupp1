@@ -6,7 +6,7 @@
 
 typedef struct link link_t;
 typedef struct list list_t;
-//typedef void(*list_action)(L elem);
+typedef void(*list_action)(L elem);
 
 struct list {
   link_t *first;
@@ -167,11 +167,21 @@ int list_length(list_t *list) {
   return i;
 }
 
-/*
 void list_delete(list_t *list, list_action cleanup) {
-  
-}
+  link_t *next = list -> first -> next;
+  link_t *current = list -> first;
+  while (next) {
+    cleanup(current -> data);
+    free(current);
+    current = next;
+    next = next -> next;
+  }
+  cleanup(current -> data);
+  free(current);
 
+  free(list);
+}
+/*
 typedef void(*list_action2)(L elem, void *data) {
   
 }

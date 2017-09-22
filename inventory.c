@@ -32,16 +32,18 @@ void print_menu() {
 
 char ask_question_menu() {
   print_menu();
-  //char input = ask_question_char("Vad vill du göra? ");
-  char buf[100];
-  read_string(buf, 100);
-  char input = buf[0];
+  char input = ask_question_char("Vad vill du göra? ");
   
   while (strchr("LlTtRrGgHhAa", input) == NULL) {
     printf("Felaktig inmatning: '%c'\n", input);
     input = ask_question_char("Vad vill du göra? ");
   }
   return toupper(input);
+}
+
+void delete_shelf(shelf_t *shelf) //cleanup funktion
+{
+  free(shelf);
 }
 
 shelf_t *make_shelf(char *shelfname, int amount) {
@@ -51,6 +53,12 @@ shelf_t *make_shelf(char *shelfname, int amount) {
     s -> amount = amount;
   }
   return s;
+}
+
+void delete_item(item_t *item) {
+  list_t *list = item -> shelfs;
+  list_delete(list,  (list_action) delete_shelf);
+  free(item);
 }
 
 item_t *make_item(char *name, char *desc, int price, char *shelfname, int amount) {
@@ -93,7 +101,10 @@ void print_item(item_t *item) {
   list_t *list = item -> shelfs;
   printf("\nNamn: %s\n", name);
   printf("Beskrivning: %s\n", desc);
-  printf("Pris: %d\n", price);
+
+  int kr = price / 100;
+  int ore = price % 100;
+  printf("Pris: %d.%d kr\n", kr, ore);
 
   int l = list_length(list);
   
@@ -165,8 +176,13 @@ void remove_item_from_db(tree_t *db) {
   if (tree_size(db) < 1) {
     printf("Databasen är tom, det finns inga varor att ta bort\n");
   } else {
-    char *key = ask_question_string("Vilken vara vill du ta bort? \n");
-    tree_remove(db, key);
+    char *key = ask_question_string("Vilken vara vill du ta bort? ");
+    if (tree_has_key(db, key)) {
+      tree_remove(db, key);
+      printf("Vara '%s' är nu borttagen", key);
+    } else {
+      printf("Varan finns inte i databasen\n");
+    }
   }
   //return tree_remove(db, key); --------------------------FIX LATER!
 }
@@ -184,7 +200,7 @@ void list_db_2(K key, T elem, void *data) {
 void list_db(tree_t *db) {
   int length = tree_size(db);
   int sida = 1;
-  int per_sida = 2;
+  int per_sida = 4;
   
   if (length < 1) {
     printf("Databasen är tom, det finns inga varor att lista\n");
@@ -194,7 +210,7 @@ void list_db(tree_t *db) {
     while (true) {
       printf("\nAlla varor, sida %d\n", sida);
 
-      //--------------
+      //-----------Debugging---
       for (i=1; i<=length; i++)
         {
           printf("%d. %s\n", i, namn[i-1]);

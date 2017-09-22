@@ -75,9 +75,10 @@ int ask_question_int(char *question) {
   return ask_question(question, is_number, (convert_func) atoi).i; 
 }
 
+char str_to_Uchar(char *str) {
+  return toupper(str[0]);
+}
+
 char ask_question_char(char *question) {
-  char *str = ask_question(question, is_char, (convert_func) strdup).s;
-  char result = str[0];
-  free(str);
-  return result;
+  return ask_question(question, is_char, (convert_func) str_to_Uchar).c;
 }
