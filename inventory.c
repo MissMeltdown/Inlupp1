@@ -158,8 +158,8 @@ void add_item_to_db(tree_t *db) {
 		char jnr = 'k';
 		
 		while (true) {
-			print_item(newitem);
 			do {
+				print_item(newitem);
 				jnr = toupper(ask_question_char("Vill du lägga till varan? ([J]a, [N]ej, [R]edigera) "));
 				if (jnr == 'J') {
 					tree_insert(db, name, newitem);
@@ -179,36 +179,36 @@ void add_item_to_db(tree_t *db) {
 					}while (strchr("NBPLTA", val) == NULL);
 			
 					if (val == 'N') {
-						printf("\nNuvarande namn: %s\n", name);
+						printf("\nNuvarande namn: %s\n", newitem.name);
 						printf("-----------------------------------------------\n");
-						name = ask_question_string("Nytt namn: ");
+						newitem.name = ask_question_string("Nytt namn: ");
 						printf("\nNamnet har ändrats\n");
 						
 					} else if (val == 'B') {
-						printf("\nNuvarande beskrivning: %s\n", desc);
+						printf("\nNuvarande beskrivning: %s\n", newitem.desc);
 						printf("-----------------------------------------------\n");
-						desc = ask_question_string("Ny beskrivning: ");
+						newitem.desc = ask_question_string("Ny beskrivning: ");
 						printf("\nBeskrivningen har ändrats\n");
 				
 					} else if (val == 'P') {
-						int price = price;
+						int price = newitem.price;
 						int kr = price / 100;
 						int ore = price % 100;
 						printf("Nuvarande pris: %d.%d kr\n", kr, ore);
 						printf("-----------------------------------------------\n");
-						price = ask_question_int("Nytt pris i ören: ");
+						newitem.price = ask_question_int("Nytt pris i ören: ");
 						printf("\nPriset har ändrats\n");
 			
 					} else if (val == 'L') {
-						printf("\nNuvarande hylla: %s\n", shelfname);
+						printf("\nNuvarande hylla: %s\n", newitem.shelfname);
 						printf("-----------------------------------------------\n");
-						shelfname = ask_question_string("Ny hylla: ");
+						newitem.shelfname = ask_question_string("Ny hylla: ");
 						printf("\nLagerhyllan har ändrats/n");
 				
 					} else if (val == 'T') {
-						printf("\nNuvarande antal: %d\n", amount);
+						printf("\nNuvarande antal: %d\n", newitem.amount);
 						printf("-----------------------------------------------\n");
-						amount = ask_question_int("Nytt antal: ");
+						newitem.amount = ask_question_int("Nytt antal: ");
 						printf("\nAntal har ändrats/n");
 			
 					} else if (val == 'A') {
