@@ -179,7 +179,7 @@ void add_item_to_db(tree_t *db) {
 					}while (strchr("NBPLTA", val) == NULL);
 					
 					shelf_t *data = *list_first(newitem -> shelfs);
-					//(struct shelf_t*) 
+					
 					if (val == 'N') {
 						printf("\nNuvarande namn: %s\n", newitem -> name);
 						printf("-----------------------------------------------\n");
