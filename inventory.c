@@ -308,27 +308,27 @@ void edit_db(tree_t *db) {
 			printf("-----------------------------------------------\n")
 			item -> desc = ask_question_string("Ny beskrivning:");
 			printf("\nBeskrivningen har ändrats\n");
-		} else if (val == P) {
-			int price = item -> price
+		} else if (val == 'P') {
+			int price = item -> price;
 			int kr = price / 100;
 			int ore = price % 100;
 			printf("Nuvarande pris: %d.%d kr\n", kr, ore);
 			printf("-----------------------------------------------\n")
 			item -> price = ask_question_int("Nytt pris i ören:");
 			printf("\nPriset har ändrats\n");
-		} else if (val == L) {
+		} else if (val == 'L') {
 			//printf("Nuvarande lagerhylla: %s\n", item ->);
 			printf("\nNot yet implemented\n");
 			printf("-----------------------------------------------\n")
 			//item -> desc = ask_question_string("Ny beskrivning:");
 			//printf("Beskrivningen har ändrats");		
-		} else if (val == T){
+		} else if (val == 'T'){
 			//printf("Nuvarande antal: %s\n", item ->);
 			printf("\nNot yet implemented\n");
 			printf("-----------------------------------------------\n")
 			//item -> desc = ask_question_string("Ny beskrivning:");
 			//printf("Beskrivningen har ändrats");			
-		} else if (val == A) {
+		} else if (val == 'A') {
 			free(namn);
 			return;
 		}
