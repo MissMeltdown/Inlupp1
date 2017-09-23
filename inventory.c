@@ -177,7 +177,9 @@ void add_item_to_db(tree_t *db) {
 														"An[t]al\n"
 														"\nVälj rad eller [a]vbryt: "));
 					}while (strchr("NBPLTA", val) == NULL);
-			
+					
+					shelf_t *data = list_first(newitem -> shelfs)
+					
 					if (val == 'N') {
 						printf("\nNuvarande namn: %s\n", newitem -> name);
 						printf("-----------------------------------------------\n");
@@ -200,15 +202,15 @@ void add_item_to_db(tree_t *db) {
 						printf("\nPriset har ändrats\n");
 			
 					} else if (val == 'L') {
-						printf("\nNuvarande hylla: %s\n", newitem -> shelfs -> first -> shelfname);
+						printf("\nNuvarande hylla: %s\n", data -> shelfname);
 						printf("-----------------------------------------------\n");
-						newitem -> shelfs -> first -> shelfname = ask_question_string("Ny hylla: ");
+						data -> shelfname = ask_question_string("Ny hylla: ");
 						printf("\nLagerhyllan har ändrats/n");
 				
 					} else if (val == 'T') {
-						printf("\nNuvarande antal: %d\n", newitem -> shelfs -> first -> amount);
+						printf("\nNuvarande antal: %d\n", data -> amount);
 						printf("-----------------------------------------------\n");
-						newitem -> shelfs -> first -> amount = ask_question_int("Nytt antal: ");
+						data -> amount = ask_question_int("Nytt antal: ");
 						printf("\nAntal har ändrats/n");
 			
 					} else if (val == 'A') {
