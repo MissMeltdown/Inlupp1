@@ -239,7 +239,7 @@ void tree_keys_rec(node_t *node, K buf[], int *pos) {
 }
 
 K *tree_keys(tree_t *tree) {
-  K *buf = calloc(1, sizeof(K));
+  K *buf = calloc(tree_size(tree), sizeof(K));`
   node_t *topnode = tree -> topnode;
   int pos = 0;
   tree_keys_rec(topnode, buf, &pos);
