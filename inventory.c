@@ -332,7 +332,7 @@ void edit_db(tree_t *db) {
 			free(namn);
 			return;
 		}
-	
+    }
     free(namn);
 }
 
