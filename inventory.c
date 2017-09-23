@@ -117,60 +117,108 @@ void print_item(item_t *item) {
 }
 
 void add_item_to_db(tree_t *db) {
-  char *desc;
-  char *shelfname;
-  int amount;
-  int price;
-  item_t *item;
-  list_t *list;
-  println("\nLägg till en ny vara\n");
-  char *name = ask_question_string("Namn: ");
-  if (tree_has_key(db, name)) {
-    printf("%s finns redan i databasen.\n"
-	   "Använder samma pris och beskrivning.\n", name);
-    item = tree_get(db, name);
-    price = item -> price;
-    desc = item -> desc;
-    list = item -> shelfs;
+	char *desc;
+	char *shelfname;
+	int amount;
+	int price;
+	item_t *item;
+	list_t *list;
+	println("\nLägg till en ny vara\n");
+	char *name = ask_question_string("Namn: ");
+	if (tree_has_key(db, name)) {
+		printf("%s finns redan i databasen.\n"
+			   "Använder samma pris och beskrivning.\n", name);
+		item = tree_get(db, name);
+		price = item -> price;
+		desc = item -> desc;
+		list = item -> shelfs;
+		shelfname = ask_question_shelf("Hylla: ");
     
-    shelfname = ask_question_shelf("Hylla: ");
+		while (shelf_exists(shelfname)) {
+			printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
+			shelfname = ask_question_shelf("Hylla: ");      
+		}
+	
+		amount = ask_question_int("Antal: ");
+		shelf_t *elem = make_shelf(shelfname, amount);
+		list_append(list, elem);
     
-    while (shelf_exists(shelfname)) {
-      printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
-      shelfname = ask_question_shelf("Hylla: ");      
-    }
-    amount = ask_question_int("Antal: ");
-    shelf_t *elem = make_shelf(shelfname, amount);
-    list_append(list, elem);
-    
-  } else {
-    desc  = ask_question_string("Beskrivning: ");
-    price = ask_question_int("Pris: ");
-    shelfname = ask_question_shelf("Hylla: ");
+	} else {
+		desc  = ask_question_string("Beskrivning: ");
+		price = ask_question_int("Pris: ");
+		shelfname = ask_question_shelf("Hylla: ");
 
-    while (shelf_exists(shelfname)) {
-      printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
-      shelfname = ask_question_shelf("Hylla: ");      
-    }
+		while (shelf_exists(shelfname)) {
+			printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
+			shelfname = ask_question_shelf("Hylla: ");      
+		}
     
-    amount = ask_question_int("Antal: ");
-    item_t *newitem = make_item(name, desc, price, shelfname, amount);
-    char jnr = 'k';
-    while (true) {
-      print_item(newitem);
-      jnr = toupper(ask_question_char("Vill du lägga till varan? ([J]a, [N]ej, [R]edigera) "));
-      if (jnr == 'J') {
-        tree_insert(db, name, newitem);
-        return;
-      } else if (jnr == 'N') {
-        return;
-      } else if (jnr == 'R') {
-		  printf("Not yet implemented");
-        //newitem = edit_item(newitem);
-        return;
-      }
-    }
-  }
+		amount = ask_question_int("Antal: ");
+		item_t *newitem = make_item(name, desc, price, shelfname, amount);
+		char jnr = 'k';
+		
+		while (true) {
+			print_item(newitem);
+			do {
+				jnr = toupper(ask_question_char("Vill du lägga till varan? ([J]a, [N]ej, [R]edigera) "));
+				if (jnr == 'J') {
+					tree_insert(db, name, newitem);
+					return;
+				} else if (jnr == 'N') {
+					return;
+				} else if (jnr == 'R') {
+					char val;
+					do {
+						val = toupper(ask_question_char("Vilken del vill du redigera?"
+														"\n[N]amn\n"
+														"\n[B]eskrivning\n"
+														"[P]ris\n"
+														"[L]agerhylla\n"
+														"An[t]al\n"
+														"\nVälj rad eller [a]vbryt: "));
+					}while (strchr("NBPLTA", val) == NULL);
+			
+					if (val == 'N') {
+						printf("\nNuvarande namn: %s\n", newitem -> name;
+						printf("-----------------------------------------------\n");
+						newitem -> name = ask_question_string("Nytt namn: ");
+						printf("\nNamnet har ändrats\n");
+								
+					} else if (val == 'B') {
+						printf("\nNuvarande beskrivning: %s\n", newitem -> desc);
+						printf("-----------------------------------------------\n");
+						newitem -> desc = ask_question_string("Ny beskrivning: ");
+						printf("\nBeskrivningen har ändrats\n");
+				
+					} else if (val == 'P') {
+						int price = newitem -> price;
+						int kr = price / 100;
+						int ore = price % 100;
+						printf("Nuvarande pris: %d.%d kr\n", kr, ore);
+						printf("-----------------------------------------------\n");
+						newitem -> price = ask_question_int("Nytt pris i ören: ");
+						printf("\nPriset har ändrats\n");
+			
+					} else if (val == 'L') {
+						printf("\nNuvarande hylla: %s\n", newitem -> shelfname);
+						printf("-----------------------------------------------\n");
+						newitem -> shelfname = ask_question_string("Ny hylla: ");
+						printf("\nLagerhyllan har ändrats/n");
+				
+					} else if (val == 'T') {
+						printf("\nNuvarande antal: %s\n", newitem -> amount);
+						printf("-----------------------------------------------\n");
+						newitem -> amount = ask_question_int("Nytt antal: ");
+						printf("\nAntal har ändrats/n");
+			
+					} else if (val == 'A') {
+						break;
+					}
+				}
+			} while (jnr == 'R');
+		}
+	}
+	return;
 }
 
 void remove_item_from_db(tree_t *db) {
