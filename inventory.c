@@ -343,7 +343,6 @@ void edit_db(tree_t *db) {
 		} else if (val == 'T'){
 			list_t *list = item -> shelfs;
 			int l = list_length(list);
-			printf("the length of the list is: %d\n", l);
 			for (int i = 0; i < l; i++) {
 				shelf_t *p = *list_get(list, i);
 				char *shelf = p -> shelfname;
@@ -352,7 +351,6 @@ void edit_db(tree_t *db) {
 			}	
 			do {
 				val = (ask_question_int("Vilken hylla vill du ändra antal på?: ") - 1);
-				printf("%d", val);
 			}while (val >= l || val <= 0);
 			
 			printf("-----------------------------------------------\n");
