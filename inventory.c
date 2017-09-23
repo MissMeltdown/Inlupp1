@@ -202,13 +202,13 @@ void add_item_to_db(tree_t *db) {
 					} else if (val == 'L') {
 						printf("\nNuvarande hylla: %s\n", newitem -> shelfs -> first -> shelfname);
 						printf("-----------------------------------------------\n");
-						newitem -> shelfs -> fist -> shelfname = ask_question_string("Ny hylla: ");
+						newitem -> shelfs -> first -> shelfname = ask_question_string("Ny hylla: ");
 						printf("\nLagerhyllan har ändrats/n");
 				
 					} else if (val == 'T') {
-						printf("\nNuvarande antal: %d\n", newitem -> shelfs -> fist -> amount);
+						printf("\nNuvarande antal: %d\n", newitem -> shelfs -> first -> amount);
 						printf("-----------------------------------------------\n");
-						newitem -> shelfs -> fist -> amount = ask_question_int("Nytt antal: ");
+						newitem -> shelfs -> first -> amount = ask_question_int("Nytt antal: ");
 						printf("\nAntal har ändrats/n");
 			
 					} else if (val == 'A') {
