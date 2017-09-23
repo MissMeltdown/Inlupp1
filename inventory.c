@@ -336,7 +336,7 @@ void edit_db(tree_t *db) {
 			char *newshelf;
 			do {
 				newshelf = ask_question_string("Ny hylla: ");
-			}while (!shelf_exists(newshelf));
+			}while (shelf_exists(newshelf) && !(shelf_is_valid(newshelf)));
 			p -> shelfname = newshelf; 				
 			printf("\nLagerhyllan har ändrats/n");
 			
