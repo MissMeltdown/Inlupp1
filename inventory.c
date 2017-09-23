@@ -321,6 +321,7 @@ void edit_db(tree_t *db) {
 		} else if (val == 'L') {
 			list_t *list = item -> shelfs;
 			int l = list_length(list);
+			printf("the length of the list is: %d", l);
 			for (int i=0; i<l; i++) {
 				shelf_t *p = *list_get(list, i);
 				char *shelf = p -> shelfname;
