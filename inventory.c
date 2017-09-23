@@ -165,6 +165,7 @@ void add_item_to_db(tree_t *db) {
       } else if (jnr == 'N') {
         return;
       } else if (jnr == 'R') {
+		  printf("Not yet implemented");
         //newitem = edit_item(newitem);
         return;
       }
@@ -187,10 +188,6 @@ void remove_item_from_db(tree_t *db) {
   //return tree_remove(db, key); --------------------------FIX LATER!
 }
 
-void edit_db(tree_t *db)
-{
-  
-}
 
 void list_db_2(K key, T elem, void *data) {
   print_item(elem);
@@ -209,15 +206,6 @@ void list_db(tree_t *db) {
     int i=1;
     while (true) {
       printf("\nAlla varor, sida %d\n", sida);
-
-      //-----------Debugging---
-      for (i=1; i<=length; i++)
-        {
-          printf("%d. %s\n", i, namn[i-1]);
-        }
-      printf("\n");
-
-      //--------------
       
       for (i=1; (sida-1)*per_sida + i-1<length && i<=per_sida; i++) {
         printf("\n%d. %s", i, namn[(sida-1)*per_sida + i-1]);
@@ -254,6 +242,98 @@ void list_db(tree_t *db) {
     
     free(namn);
   }
+}
+
+void edit_db(tree_t *db) {
+  int length = tree_size(db);
+  int sida = 1;
+  int per_sida = 4;
+  
+  if (length < 1) {
+    printf("Databasen är tom, det finns inga varor att redigera\n");
+  } else {
+    char **namn = tree_keys(db);
+    int i=1;
+    while (true) {
+      printf("\nAlla varor, sida %d\n", sida);
+      
+      for (i=1; (sida-1)*per_sida + i-1<length && i<=per_sida; i++) {
+        printf("\n%d. %s", i, namn[(sida-1)*per_sida + i-1]);
+      }
+      
+      printf("\n\n[S]e en vara\n");
+      
+      if (length > sida*per_sida) { //if (Det finns en till sida)
+        printf("[N]ästa sida\n");
+      }
+      if (sida > 1) { //if (Det finns en föregående sida)
+        printf("[F]öregående sida\n");
+      }
+      printf("[A]vbryt\n");
+      char val = toupper(ask_question_char("Vad vill du göra? "));
+      if (val == 'S') {
+        break;
+      } else if (val == 'N' && length > sida*per_sida) {
+        sida++;
+      } else if (val == 'F' && sida > 1) {
+        sida--;
+      } else if (val == 'A') {
+        free(namn);
+        return;
+      }
+    }
+    int vara = ask_question_int("Vilken vara vill du se? Välj siffra: ");
+    while ((sida-1)*per_sida + vara-1 >= length || (sida-1)*per_sida + vara-1 < 0) {
+      vara = ask_question_int("Vilken vara vill du se? Välj siffra: ");
+    }
+    char *key = namn[(sida-1)*per_sida + vara-1];
+    item_t *item = tree_get(db, key);
+    print_item(item);
+	printf("-----------------------------------------------\n")
+	printf("\n[B]eskrivning\n"
+		"[P]ris\n"
+		"[L]agerhylla\n"
+		"An[t]al\n");
+		val = toupper(ask_question_char("Välj rad eller [a]vbryt:"));
+	while (strchr("BPLTA", val) == NULL) {
+		val = toupper(ask_question_char("Felaktig inmatning.\n"
+										"[B]eskrivning\n"
+										"[P]ris\n"
+										"[L]agerhylla\n"
+										"An[t]al\n"
+										"Välj rad eller [a]vbryt:"));
+	}
+		if (val == B) {
+			printf("\nNuvarande beskrivning: %s\n", item -> desc);
+			printf("-----------------------------------------------\n")
+			item -> desc = ask_question_string("Ny beskrivning:");
+			printf("\nBeskrivningen har ändrats\n");
+		} else if (val == P) {
+			int price = item -> price
+			int kr = price / 100;
+			int ore = price % 100;
+			printf("Nuvarande pris: %d.%d kr\n", kr, ore);
+			printf("-----------------------------------------------\n")
+			item -> price = ask_question_int("Nytt pris i ören:");
+			printf("\nPriset har ändrats\n");
+		} else if (val == L) {
+			//printf("Nuvarande lagerhylla: %s\n", item ->);
+			printf("\nNot yet implemented\n");
+			printf("-----------------------------------------------\n")
+			//item -> desc = ask_question_string("Ny beskrivning:");
+			//printf("Beskrivningen har ändrats");		
+		} else if (val == T){
+			//printf("Nuvarande antal: %s\n", item ->);
+			printf("\nNot yet implemented\n");
+			printf("-----------------------------------------------\n")
+			//item -> desc = ask_question_string("Ny beskrivning:");
+			//printf("Beskrivningen har ändrats");			
+		} else if (val == A) {
+			free(namn);
+			return;
+		}
+	
+    free(namn);
 }
 
 void event_loop(tree_t *db) {
