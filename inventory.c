@@ -289,7 +289,7 @@ void edit_db(tree_t *db) {
     char *key = namn[(sida-1)*per_sida + vara-1];
     item_t *item = tree_get(db, key);
     print_item(item);
-	printf("-----------------------------------------------\n")
+	printf("-----------------------------------------------\n");
 	printf("\n[B]eskrivning\n"
 		"[P]ris\n"
 		"[L]agerhylla\n"
@@ -303,9 +303,9 @@ void edit_db(tree_t *db) {
 										"An[t]al\n"
 										"Välj rad eller [a]vbryt:"));
 	}
-		if (val == B) {
+		if (val == 'B') {
 			printf("\nNuvarande beskrivning: %s\n", item -> desc);
-			printf("-----------------------------------------------\n")
+			printf("-----------------------------------------------\n");
 			item -> desc = ask_question_string("Ny beskrivning:");
 			printf("\nBeskrivningen har ändrats\n");
 		} else if (val == 'P') {
@@ -313,19 +313,19 @@ void edit_db(tree_t *db) {
 			int kr = price / 100;
 			int ore = price % 100;
 			printf("Nuvarande pris: %d.%d kr\n", kr, ore);
-			printf("-----------------------------------------------\n")
+			printf("-----------------------------------------------\n");
 			item -> price = ask_question_int("Nytt pris i ören:");
 			printf("\nPriset har ändrats\n");
 		} else if (val == 'L') {
 			//printf("Nuvarande lagerhylla: %s\n", item ->);
 			printf("\nNot yet implemented\n");
-			printf("-----------------------------------------------\n")
+			printf("-----------------------------------------------\n");
 			//item -> desc = ask_question_string("Ny beskrivning:");
 			//printf("Beskrivningen har ändrats");		
 		} else if (val == 'T'){
 			//printf("Nuvarande antal: %s\n", item ->);
 			printf("\nNot yet implemented\n");
-			printf("-----------------------------------------------\n")
+			printf("-----------------------------------------------\n");
 			//item -> desc = ask_question_string("Ny beskrivning:");
 			//printf("Beskrivningen har ändrats");			
 		} else if (val == 'A') {
