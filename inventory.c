@@ -294,7 +294,7 @@ void edit_db(tree_t *db) {
 		"[P]ris\n"
 		"[L]agerhylla\n"
 		"An[t]al\n");
-		val = toupper(ask_question_char("Välj rad eller [a]vbryt:"));
+		char val = toupper(ask_question_char("Välj rad eller [a]vbryt:"));
 	while (strchr("BPLTA", val) == NULL) {
 		val = toupper(ask_question_char("Felaktig inmatning.\n"
 										"[B]eskrivning\n"
@@ -332,8 +332,8 @@ void edit_db(tree_t *db) {
 			free(namn);
 			return;
 		}
+	free(namn);
     }
-    free(namn);
 }
 
 void event_loop(tree_t *db) {
