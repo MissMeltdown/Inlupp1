@@ -306,29 +306,55 @@ void edit_db(tree_t *db) {
 		if (val == 'B') {
 			printf("\nNuvarande beskrivning: %s\n", item -> desc);
 			printf("-----------------------------------------------\n");
-			item -> desc = ask_question_string("Ny beskrivning:");
+			item -> desc = ask_question_string("Ny beskrivning: ");
 			printf("\nBeskrivningen har ändrats\n");
+			
 		} else if (val == 'P') {
 			int price = item -> price;
 			int kr = price / 100;
 			int ore = price % 100;
 			printf("Nuvarande pris: %d.%d kr\n", kr, ore);
 			printf("-----------------------------------------------\n");
-			item -> price = ask_question_int("Nytt pris i ören:");
+			item -> price = ask_question_int("Nytt pris i ören: ");
 			printf("\nPriset har ändrats\n");
+			
 		} else if (val == 'L') {
-			//printf("Nuvarande lagerhylla: %s\n", item ->);
-			printf("\nNot yet implemented\n");
+			list_t *list = item -> shelfs;
+			int l = list_length(list);
+			for (int i=0; i<l; i++) {
+				shelf_t *p = *list_get(list, i);
+				char *shelf = p -> shelfname;
+				int antal = p -> amount;
+				printf("%d. Hylla: %s, Antal: %d\n", i + 1, shelf, antal);
+			}	
+			do {
+				val = (ask_question_int("Vilken hylla vill du ändra?: ") - 1);
+			}while (val < l && val > 0);
+			
 			printf("-----------------------------------------------\n");
-			//item -> desc = ask_question_string("Ny beskrivning:");
-			//printf("Beskrivningen har ändrats");		
+			shelf_t *p = *list_get(list, val);
+			p -> shelfname = ask_question_string("Ny hylla: ");
+			printf("\nLagerhyllan har ändrats/n");
+			
 		} else if (val == 'T'){
-			//printf("Nuvarande antal: %s\n", item ->);
-			printf("\nNot yet implemented\n");
+			list_t *list = item -> shelfs;
+			int l = list_length(list);
+			for (int i=0; i<l; i++) {
+				shelf_t *p = *list_get(list, i);
+				char *shelf = p -> shelfname;
+				int antal = p -> amount;
+				printf("%d. Hylla: %s, Antal: %d\n", i + 1, shelf, antal);
+			}	
+			do {
+				val = (ask_question_int("Vilken hylla vill du ändra antal på?: ") - 1);
+			}while (val < l && val > 0);
+			
 			printf("-----------------------------------------------\n");
-			//item -> desc = ask_question_string("Ny beskrivning:");
-			//printf("Beskrivningen har ändrats");			
-		} else if (val == 'A') {
+			shelf_t *p = *list_get(list, val);
+			p -> amount = ask_question_int("Nytt antal: ");
+			printf("\nAntal har ändrats/n");	
+	
+		} else {
 			free(namn);
 			return;
 		}
