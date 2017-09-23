@@ -206,7 +206,7 @@ void add_item_to_db(tree_t *db) {
 						printf("\nLagerhyllan har ändrats/n");
 				
 					} else if (val == 'T') {
-						printf("\nNuvarande antal: %s\n", amount);
+						printf("\nNuvarande antal: %d\n", amount);
 						printf("-----------------------------------------------\n");
 						amount = ask_question_int("Nytt antal: ");
 						printf("\nAntal har ändrats/n");
