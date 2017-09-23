@@ -325,7 +325,7 @@ void edit_db(tree_t *db) {
 				shelf_t *p = *list_get(list, i);
 				char *shelf = p -> shelfname;
 				int antal = p -> amount;
-				printf("%d. Hylla: %s, Antal: %d\n", i, shelf, antal);
+				printf("%d. Hylla: %s, Antal: %d\n", i + 1, shelf, antal);
 			}	
 			do {
 				val = (ask_question_int("Vilken hylla vill du ändra?: ") - 1);
@@ -333,7 +333,11 @@ void edit_db(tree_t *db) {
 			
 			printf("-----------------------------------------------\n");
 			shelf_t *p = *list_get(list, val);
-			p -> shelfname = ask_question_string("Ny hylla: ");
+			char *newshelf;
+			do {
+				newshelf = ask_question_string("Ny hylla: ");
+			}while (!shelf_exists(newshelf));
+			p -> shelfname = newshelf; 				
 			printf("\nLagerhyllan har ändrats/n");
 			
 		} else if (val == 'T'){
@@ -343,7 +347,7 @@ void edit_db(tree_t *db) {
 				shelf_t *p = *list_get(list, i);
 				char *shelf = p -> shelfname;
 				int antal = p -> amount;
-				printf("%d. Hylla: %s, Antal: %d\n", i , shelf, antal);
+				printf("%d. Hylla: %s, Antal: %d\n", i +1 , shelf, antal);
 			}	
 			do {
 				val = (ask_question_int("Vilken hylla vill du ändra antal på?: ") - 1);
