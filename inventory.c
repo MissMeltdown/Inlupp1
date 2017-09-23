@@ -200,7 +200,7 @@ void add_item_to_db(tree_t *db) {
 						printf("\nPriset har ändrats\n");
 			
 					} else if (val == 'L') {
-						printf("\nNuvarande hylla: %s\n", newitem -> shelfs -> fist -> shelfname);
+						printf("\nNuvarande hylla: %s\n", newitem -> shelfs -> first -> shelfname);
 						printf("-----------------------------------------------\n");
 						newitem -> shelfs -> fist -> shelfname = ask_question_string("Ny hylla: ");
 						printf("\nLagerhyllan har ändrats/n");
