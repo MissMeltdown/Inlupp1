@@ -329,7 +329,7 @@ void edit_db(tree_t *db) {
 			}	
 			do {
 				val = (ask_question_int("Vilken hylla vill du ändra?: ") - 1);
-			}while (val <= l && val > 0);
+			}while (val < l || val >= 0);
 			
 			printf("-----------------------------------------------\n");
 			shelf_t *p = *list_get(list, val);
@@ -351,7 +351,7 @@ void edit_db(tree_t *db) {
 			}	
 			do {
 				val = (ask_question_int("Vilken hylla vill du ändra antal på?: ") - 1);
-			}while (val <= l && val > 0);
+			}while (val < l || val >= 0);
 			
 			printf("-----------------------------------------------\n");
 			shelf_t *p = *list_get(list, val);
