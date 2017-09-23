@@ -294,14 +294,14 @@ void edit_db(tree_t *db) {
 		"[P]ris\n"
 		"[L]agerhylla\n"
 		"An[t]al\n");
-		char val = toupper(ask_question_char("Välj rad eller [a]vbryt:"));
+		char val = toupper(ask_question_char("Välj rad eller [a]vbryt: "));
 	while (strchr("BPLTA", val) == NULL) {
 		val = toupper(ask_question_char("Felaktig inmatning.\n"
-										"[B]eskrivning\n"
+										"\n[B]eskrivning\n"
 										"[P]ris\n"
 										"[L]agerhylla\n"
 										"An[t]al\n"
-										"Välj rad eller [a]vbryt:"));
+										"\nVälj rad eller [a]vbryt: "));
 	}
 		if (val == 'B') {
 			printf("\nNuvarande beskrivning: %s\n", item -> desc);
@@ -325,7 +325,7 @@ void edit_db(tree_t *db) {
 				shelf_t *p = *list_get(list, i);
 				char *shelf = p -> shelfname;
 				int antal = p -> amount;
-				printf("%d. Hylla: %s, Antal: %d\n", i + 1, shelf, antal);
+				printf("%d. Hylla: %s, Antal: %d\n", i, shelf, antal);
 			}	
 			do {
 				val = (ask_question_int("Vilken hylla vill du ändra?: ") - 1);
@@ -343,7 +343,7 @@ void edit_db(tree_t *db) {
 				shelf_t *p = *list_get(list, i);
 				char *shelf = p -> shelfname;
 				int antal = p -> amount;
-				printf("%d. Hylla: %s, Antal: %d\n", i + 1, shelf, antal);
+				printf("%d. Hylla: %s, Antal: %d\n", i , shelf, antal);
 			}	
 			do {
 				val = (ask_question_int("Vilken hylla vill du ändra antal på?: ") - 1);
