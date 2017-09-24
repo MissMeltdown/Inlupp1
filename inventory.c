@@ -90,8 +90,25 @@ char *ask_question_shelf(char *question) {
   return ask_question(question, shelf_is_valid, (convert_func) strdup).s;
 }
 
-bool shelf_exists(char* str) {
-  return false;
+bool shelf_exists(tree_t *db, char* str) {
+	/*
+	kollar igenom hela trädet och alla listor och returnerar false om str inte hittas som shelfname. Returnerar true om den existerar. 
+	*/
+	int size = tree_size(db)
+	item_t *elements = *tree_elements(db);
+  
+	for (int i = 0; i < size; i++){
+		item_t shelfs = elements[i] -> shelfs;
+		int l = list_length(shelfs)
+		for (int a = 0; a < l; a++) {
+			shelf_t link = list_get(shelfs, a)
+			if (link -> shelfname == str) {
+				return true;
+			}				; 
+		}
+	}	
+   
+	return false;
 }
 
 void print_item(item_t *item) {
@@ -134,7 +151,7 @@ void add_item_to_db(tree_t *db) {
 		list = item -> shelfs;
 		shelfname = ask_question_shelf("Hylla: ");
     
-		while (shelf_exists(shelfname)) {
+		while (shelf_exists(db, shelfname)) {
 			printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
 			shelfname = ask_question_shelf("Hylla: ");      
 		}
@@ -148,7 +165,7 @@ void add_item_to_db(tree_t *db) {
 		price = ask_question_int("Pris: ");
 		shelfname = ask_question_shelf("Hylla: ");
 
-		while (shelf_exists(shelfname)) {
+		while (shelf_exists(db, shelfname)) {
 			printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
 			shelfname = ask_question_shelf("Hylla: ");      
 		}
@@ -386,7 +403,7 @@ void edit_db(tree_t *db) {
 			char *newshelf;
 			do {
 				newshelf = ask_question_string("Ny hylla: ");
-			}while (shelf_exists(newshelf) && !(shelf_is_valid(newshelf)));
+			}while (shelf_exists(db, newshelf) && !(shelf_is_valid(newshelf)));
 			p -> shelfname = newshelf; 				
 			printf("\nLagerhyllan har ändrats/n");
 			
