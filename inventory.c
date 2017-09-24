@@ -94,14 +94,14 @@ bool shelf_exists(tree_t *db, char* str) {
 	/*
 	kollar igenom hela trädet och alla listor och returnerar false om str inte hittas som shelfname. Returnerar true om den existerar. 
 	*/
-	int size = tree_size(db)
+	int size = tree_size(db);
 	item_t *elements = *tree_elements(db);
   
 	for (int i = 0; i < size; i++){
 		item_t shelfs = elements[i] -> shelfs;
-		int l = list_length(shelfs)
+		int l = list_length(shelfs);
 		for (int a = 0; a < l; a++) {
-			shelf_t link = list_get(shelfs, a)
+			shelf_t link = list_get(shelfs, a);
 			if (link -> shelfname == str) {
 				return true;
 			}				; 
