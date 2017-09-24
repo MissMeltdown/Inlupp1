@@ -80,23 +80,24 @@ item_t *make_item(char *name, char *desc, int price, char *shelfname, int amount
   return i; 
 }
 
-bool shelf_exists(char* str) {
+bool shelf_exists(tree_t *db, char* str) {
   /*
     kollar igenom hela trädet och alla listor och returnerar false om str inte hittas som shelfname. Returnerar true om den existerar. 
   */
-  //int size = tree_size(db);
-  //item_t *elements = *tree_elements(db);
-  
-  //for (int i = 0; i < size; i++){
-  //  item_t shelfs = elements[i] -> shelfs;
-  //  int l = list_length(shelfs);
-  //  for (int a = 0; a < l; a++) {
-  //    shelf_t link = list_get(shelfs, a);
-  //    if (link -> shelfname == str) {
-  //    return true;
-  //    }
-  //  }
-  //}
+  /*int size = tree_size(db);
+  item_t **elements = *tree_elements(db);
+  printf("%d\n", size);
+  for (int i = 0; i < size; i++) {
+    list_t *shelfs = elements[i] -> shelfs;
+    int l = list_length(shelfs);
+    for (int j = 0; j < l; j++) {
+      shelf_t *link = *list_get(shelfs, j);
+      if (link -> shelfname == str) {
+        return true;
+      }
+      printf("%s\n", link -> shelfname);
+    }
+  }*/
   return false;
 }
 
@@ -127,6 +128,7 @@ void print_item(item_t *item) {
   }
   printf("-----------------------------------------------\n");
 }
+
 item_t *edit_item(tree_t *db, item_t *item, bool edit_name) {
   if (item == NULL) return NULL;
   print_item(item);
@@ -183,14 +185,14 @@ item_t *edit_item(tree_t *db, item_t *item, bool edit_name) {
       printf("%d. Hylla: %s, Antal: %d\n", i+1, shelf, antal);
     }	
     do {
-      val = (ask_question_int("Vilken hylla vill du ändra?: ") - 1);
+      val = (ask_question_int("Vilken hylla vill du ändra? ") - 1);
     } while (val >= l || val < 0);
     
     printf("-----------------------------------------------\n");
     shelf_t *p = *list_get(list, val);
     char *newshelf = ask_question_shelf("Ny hylla: ");
           
-    while (shelf_exists(newshelf)) {
+    while (shelf_exists(db, newshelf)) {
       printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", newshelf);
       newshelf = ask_question_shelf("Ny hylla: ");      
     }
@@ -208,7 +210,7 @@ item_t *edit_item(tree_t *db, item_t *item, bool edit_name) {
       printf("%d. Hylla: %s, Antal: %d\n", i+1 , shelf, antal);
     }	
     do {
-      val = (ask_question_int("Vilken hylla vill du ändra antal på?: ") - 1);
+      val = (ask_question_int("Vilken hylla vill du ändra antal på? ") - 1);
     } while (val >= l || val < 0);
     
     printf("-----------------------------------------------\n");
@@ -240,7 +242,7 @@ void add_item_to_db(tree_t *db) {
     list = item -> shelfs;
     shelfname = ask_question_shelf("Hylla: ");
     
-    while (shelf_exists(shelfname)) {
+    while (shelf_exists(db, shelfname)) {
       printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
       shelfname = ask_question_shelf("Hylla: ");      
     }
@@ -254,7 +256,7 @@ void add_item_to_db(tree_t *db) {
     price = ask_question_int("Pris i öre: ");
     shelfname = ask_question_shelf("Hylla: ");
     
-    while (shelf_exists(shelfname)) {
+    while (shelf_exists(db, shelfname)) {
       printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
       shelfname = ask_question_shelf("Hylla: ");      
     }
