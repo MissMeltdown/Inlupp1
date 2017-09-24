@@ -242,10 +242,9 @@ K *tree_keys(tree_t *tree) {
   K *buf = calloc(tree_size(tree), sizeof(K));
   node_t *topnode = tree -> topnode;
   int pos = 0;
-  tree_keys_rec(topnode, buf, &pos);
+  if (topnode) tree_keys_rec(topnode, buf, &pos);
   
   return buf;
-  //return (K *) (strdup(*buf));
 }
 
 void tree_elements_rec(node_t *node, T buf[], int *pos) {
@@ -253,22 +252,21 @@ void tree_elements_rec(node_t *node, T buf[], int *pos) {
   node_t *rightnode = node -> right;
   T elem = node -> data;
 
-  if (leftnode) tree_elements_rec(leftnode, buf, pos);
+  if (rightnode) tree_elements_rec(rightnode, buf, pos);
   
   buf[*pos] = elem;
   ++*pos;
   
-  if (rightnode) tree_elements_rec(rightnode, buf, pos);
+  if (leftnode) tree_elements_rec(leftnode, buf, pos);
 }
 
 T *tree_elements(tree_t *tree) {
-  int size = tree_size(tree);
-  T buf[size];
+  T *buf = calloc(tree_size(tree), sizeof(T));
   node_t *topnode = tree -> topnode;
   int pos = 0;
-  tree_elements_rec(topnode, buf, &pos);
-  
-  return (T *) (strdup(*buf));
+  if (topnode) tree_elements_rec(topnode, buf, &pos);
+
+  return buf;
 }
 
 void tree_apply_rec(node_t *node, enum tree_order order, tree_action2 fun, void *data) {
