@@ -30,9 +30,11 @@ bool is_number(char *str);
 
 bool not_empty(char *str);
 
-answer_t ask_question(char *question, check_func check, convert_func convert);
-
 bool is_char(char *str);
+
+bool shelf_is_valid(char *str);
+
+answer_t ask_question(char *question, check_func check, convert_func convert);
 
 char *ask_question_string(char *question);
 
@@ -40,5 +42,6 @@ int ask_question_int(char *question);
 
 char ask_question_char(char *question);
 
+char *ask_question_shelf(char *question);
 
 #endif
