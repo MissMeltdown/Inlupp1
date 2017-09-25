@@ -60,7 +60,7 @@ shelf_t *make_shelf(char *shelfname, int amount) {
 
 void delete_item(item_t *item) {
   list_t *list = item -> shelfs;
-  list_delete(list,  (list_action) delete_shelf);
+  list_delete(list, (list_action) delete_shelf);
   free(item);
 }
 
@@ -81,23 +81,21 @@ item_t *make_item(char *name, char *desc, int price, char *shelfname, int amount
 }
 
 bool shelf_exists(tree_t *db, char* str) {
-  /*
-    kollar igenom hela trädet och alla listor och returnerar false om str inte hittas som shelfname. Returnerar true om den existerar. 
-  */
-  /*int size = tree_size(db);
-  item_t **elements = *tree_elements(db);
-  printf("%d\n", size);
+  
+  int size = tree_size(db);
+  item_t **elements = (item_t **)tree_elements(db);
+
   for (int i = 0; i < size; i++) {
     list_t *shelfs = elements[i] -> shelfs;
     int l = list_length(shelfs);
+    
     for (int j = 0; j < l; j++) {
       shelf_t *link = *list_get(shelfs, j);
-      if (link -> shelfname == str) {
+      if (!strcmp(link -> shelfname, str)) {
         return true;
       }
-      printf("%s\n", link -> shelfname);
     }
-  }*/
+  }
   return false;
 }
 
@@ -338,13 +336,15 @@ item_t *choose_item(tree_t *db, char *text) {
   }
 }
 
-void remove_item_from_db(tree_t *db) {
+item_t *remove_item_from_db(tree_t *db) {
   item_t *item = choose_item(db, "att ta bort");
-  if (item == NULL) return;
+  if (item == NULL) {
+    return NULL;
+  }
   tree_remove(db, item -> name);
   printf("Vara '%s' är nu borttagen\n", item->name);
   delete_item(item);
-  //return item; --------------------------FIX LATER!
+  return item;
 }
 
 void list_db(tree_t *db) {
@@ -363,13 +363,24 @@ void edit_db(tree_t *db) {
 void event_loop(tree_t *db) {
   while (true) {
     char command = ask_question_menu();
+    item_t *latestItem;
+    item_t *tmp;
     if (command == 'L') {
+      //latestItem =
       add_item_to_db(db);
+      
     } else if (command == 'T') {
-      remove_item_from_db(db); 
+      tmp = remove_item_from_db(db);
+      if (tmp) {
+        latestItem = tmp;
+      }
+      
     } else if (command == 'R') {
+      //latestItem =
       edit_db(db);
+      
     } else if (command == 'G') {
+      
       //undo();
     } else if (command == 'H') {
       list_db(db);
