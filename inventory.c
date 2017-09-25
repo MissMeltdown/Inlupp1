@@ -82,16 +82,16 @@ item_t *make_item(char *name, char *desc, int price, char *shelfname, int amount
 bool shelf_exists(tree_t *db, char* shelfname) {
 
   int size = tree_size(db);
-  item_t **shelfs = (item_t **)tree_elements(db);
+  item_t **shelfarray = (item_t **)tree_elements(db);
   
-  for (int i = 0; i < size; i++) {
-    list_t *shelf = shelfs[i] -> shelfs;
+  for (int i = 0; i < size; i++) { //Loopar items
+    list_t *shelfs = shelfarray[i] -> shelfs;
     int l = list_length(shelfs);
     
     for (int j = 0; j < l; j++) { //Loopar hyllorna
       shelf_t *link = *list_get(shelfs, j);
       
-      if (!strcomp(link -> shelfname, shelfname)) {
+      if (!strcmp(link -> shelfname, shelfname)) {
         return true;
       }
     }
