@@ -6,20 +6,22 @@
 #include "tree.h"
 #include "list.h"
 
-typedef struct shelf shelf_t;
-typedef struct item item_t;
-
-struct shelf {
+typedef struct shelf {
   char *shelfname;
   int amount;
-};
+} shelf_t;
 
-struct item {
+typedef struct item {
   char *name;
   char *desc;
   int price;
   list_t *shelfs;
-};
+} item_t;
+
+typedef struct action {
+  enum { NOTHING, ADD, REMOVE, EDIT } type;
+  item_t *item;
+} action_t;
 
 void print_menu() {
   printf("\nMeny\n"
@@ -67,10 +69,9 @@ void delete_item(item_t *item) {
 item_t *make_item(char *name, char *desc, int price, char *shelfname, int amount) {
   list_t *shelflist = list_new();
   shelf_t *shelf = make_shelf(shelfname, amount);
-
   list_append(shelflist, shelf);
-
   item_t *i = malloc(sizeof(item_t));
+  
   if (i) {
     i -> name = name;
     i -> desc = desc;
@@ -80,18 +81,39 @@ item_t *make_item(char *name, char *desc, int price, char *shelfname, int amount
   return i; 
 }
 
-bool shelf_exists(tree_t *db, char* str) {
-  
-  int size = tree_size(db);
-  item_t **elements = (item_t **)tree_elements(db);
+item_t *copy_item(item_t *item) {
+  char *name = item -> name; 
+  char *desc = item -> desc;
+  int price = item -> price;
+  list_t *shelfs = item -> shelfs;
+  shelf_t *shelf = *list_first(shelfs);
+  int amount = shelf -> amount;
+  char *shelfname = shelf -> shelfname;
 
-  for (int i = 0; i < size; i++) {
-    list_t *shelfs = elements[i] -> shelfs;
+  item_t *copy = make_item(name, desc, price, shelfname, amount);
+
+  int length = list_length(shelfs);
+  for (int i=1; i<length; i++) {
+    shelf = *list_get(shelfs, i);
+    list_insert(copy -> shelfs, i, shelf);
+  }
+  
+  return copy;
+}
+
+bool shelf_exists(tree_t *db, char* shelfname) {
+
+  int size = tree_size(db);
+  item_t **shelfarray = (item_t **)tree_elements(db);
+  
+  for (int i = 0; i < size; i++) { //Loopar items
+    list_t *shelfs = shelfarray[i] -> shelfs;
     int l = list_length(shelfs);
     
-    for (int j = 0; j < l; j++) {
+    for (int j = 0; j < l; j++) { //Loopar hyllorna
       shelf_t *link = *list_get(shelfs, j);
-      if (!strcmp(link -> shelfname, str)) {
+      
+      if (!strcmp(link -> shelfname, shelfname)) {
         return true;
       }
     }
@@ -127,7 +149,7 @@ void print_item(item_t *item) {
   printf("-----------------------------------------------\n");
 }
 
-item_t *edit_item(tree_t *db, item_t *item, bool edit_name) {
+item_t *edit_item(tree_t *db, item_t *item, bool edit_name, action_t *undo) {
   if (item == NULL) return NULL;
   print_item(item);
   printf("\nVilken del vill du redigera?\n");
@@ -143,11 +165,20 @@ item_t *edit_item(tree_t *db, item_t *item, bool edit_name) {
   do {
     val = toupper(ask_question_char("Välj rad eller [a]vbryt: "));
   } while (strchr(str, val) == NULL);
+
+  if (val != 'A' && !edit_name) {
+    undo -> type = EDIT;
+    if (undo -> item) {
+      free(undo -> item);
+    }
+    undo -> item = copy_item(item);
+  }
   
   if (val == 'N' && edit_name) {
     printf("\nNuvarande namn: %s\n", item -> name);
     printf("-----------------------------------------------\n");
     item -> name = ask_question_string("Nytt namn: ");
+
     while (tree_has_key(db, item -> name)) {
       printf("Namnet '%s' är upptaget\n", item -> name);
       item -> name = ask_question_string("Nytt namn: ");
@@ -164,11 +195,14 @@ item_t *edit_item(tree_t *db, item_t *item, bool edit_name) {
     int price = item -> price;
     int kr = price / 100;
     int ore = price % 100;
+
     if (ore > 9) {
       printf("\nNuvarande pris: %d.%d kr\n", kr, ore);
+
     } else {
       printf("\nNuvarande pris: %d.0%d kr\n", kr, ore);
     }
+    
     printf("-----------------------------------------------\n");
     item -> price = ask_question_int("Nytt pris i ören: ");
     printf("\nPriset har ändrats\n");
@@ -176,6 +210,7 @@ item_t *edit_item(tree_t *db, item_t *item, bool edit_name) {
   } else if (val == 'L') {
     list_t *list = item -> shelfs;
     int l = list_length(list);
+
     for (int i=0; i<l; i++) {
       shelf_t *p = *list_get(list, i);
       char *shelf = p -> shelfname;
@@ -201,12 +236,14 @@ item_t *edit_item(tree_t *db, item_t *item, bool edit_name) {
   } else if (val == 'T'){
     list_t *list = item -> shelfs;
     int l = list_length(list);
+
     for (int i = 0; i < l; i++) {
       shelf_t *p = *list_get(list, i);
       char *shelf = p -> shelfname;
       int antal = p -> amount;
       printf("%d. Hylla: %s, Antal: %d\n", i+1 , shelf, antal);
-    }	
+    }
+    
     do {
       val = (ask_question_int("Vilken hylla vill du ändra antal på? ") - 1);
     } while (val >= l || val < 0);
@@ -214,13 +251,17 @@ item_t *edit_item(tree_t *db, item_t *item, bool edit_name) {
     printf("-----------------------------------------------\n");
     shelf_t *p = *list_get(list, val);
     p -> amount = ask_question_int("Nytt antal: ");
+    while (p -> amount == 0) {
+      printf("Du kan inte lägga till noll varor...\n");
+      p -> amount = ask_question_int("Antal: ");     
+    }
     printf("\nAntal har ändrats\n");
   }
   
   return item;
 }
 
-void add_item_to_db(tree_t *db) {
+void add_item_to_db(tree_t *db, action_t *undo) {
   char *desc;
   char *shelfname;
   int amount;
@@ -238,16 +279,30 @@ void add_item_to_db(tree_t *db) {
     price = item -> price;
     desc = item -> desc;
     list = item -> shelfs;
-    shelfname = ask_question_shelf("Hylla: ");
+
+    item_t *olditem = copy_item(item);
     
+    shelfname = ask_question_shelf("Hylla: ");
     while (shelf_exists(db, shelfname)) {
       printf("Hyllan %s är upptagen, vänligen välj ny hylla\n", shelfname);
       shelfname = ask_question_shelf("Hylla: ");      
     }
     
     amount = ask_question_int("Antal: ");
+    while (amount == 0) {
+      printf("Du kan inte lägga till noll varor...\n");
+      amount = ask_question_int("Antal: ");     
+    }
+    
     shelf_t *elem = make_shelf(shelfname, amount);
     list_append(list, elem);
+
+    undo -> type = EDIT;
+    if (undo -> item) {
+      free(undo -> item);
+    }
+    undo -> item = olditem;
+    return;
     
   } else {
     desc  = ask_question_string("Beskrivning: ");
@@ -260,6 +315,11 @@ void add_item_to_db(tree_t *db) {
     }
     
     amount = ask_question_int("Antal: ");
+    while (amount == 0) {
+      printf("Du kan inte lägga till noll varor...\n");
+      amount = ask_question_int("Antal: ");     
+    }
+    
     item_t *newitem = make_item(name, desc, price, shelfname, amount);
     char jnr = 'k';
     
@@ -269,6 +329,12 @@ void add_item_to_db(tree_t *db) {
       if (jnr == 'J') {
         tree_insert(db, name, newitem);
         printf("%s ligger nu i databasen\n", name);
+
+        undo -> type = ADD;
+        if (undo -> item) {
+          free(undo -> item);
+        }
+        undo -> item = copy_item(newitem);
         return;
         
       } else if (jnr == 'N') {
@@ -276,22 +342,22 @@ void add_item_to_db(tree_t *db) {
         return;
         
       } else if (jnr == 'R') {
-        newitem = edit_item(db, newitem, true);
+        newitem = edit_item(db, newitem, true, undo);
         name = newitem -> name;
       }
     }
   }
-  return;
 }
 
 item_t *choose_item(tree_t *db, char *text) {
   int length = tree_size(db);
   int sida = 1;
-  int per_sida = 4;
+  int per_sida = 20;
   
   if (length < 1) {
     printf("Databasen är tom, det finns inga varor %s\n", text);
     return NULL;
+    
   } else {
     char **namn = tree_keys(db);
     int i=1;
@@ -313,21 +379,28 @@ item_t *choose_item(tree_t *db, char *text) {
       }
       printf("[A]vbryt\n");
       char val = toupper(ask_question_char("Vad vill du göra? "));
+      
       if (val == 'V') {
         break;
+	
       } else if (val == 'N' && length > sida*per_sida) {
         sida++;
+	
       } else if (val == 'F' && sida > 1) {
         sida--;
+	
       } else if (val == 'A') {
         free(namn);
         return NULL;
       }
+      
     }
     int vara = ask_question_int("Välj vara (siffra): ");
+    
     while ((sida-1)*per_sida + vara-1 >= length || (sida-1)*per_sida + vara-1 < 0) {
       vara = ask_question_int("Välj vara (siffra): ");
     }
+    
     char *key = namn[(sida-1)*per_sida + vara-1];
     item_t *item = tree_get(db, key);
     free(namn);
@@ -336,54 +409,93 @@ item_t *choose_item(tree_t *db, char *text) {
   }
 }
 
-item_t *remove_item_from_db(tree_t *db) {
+void remove_item_from_db(tree_t *db, action_t *undo) {
   item_t *item = choose_item(db, "att ta bort");
   if (item == NULL) {
-    return NULL;
+    return;
   }
   tree_remove(db, item -> name);
   printf("Vara '%s' är nu borttagen\n", item->name);
-  delete_item(item);
-  return item;
+
+  undo -> type = REMOVE;
+  if (undo -> item) {
+    free(undo -> item);
+  }
+  undo -> item = copy_item(item);
+  free(item);
 }
 
 void list_db(tree_t *db) {
   item_t *item = choose_item(db, "att se");
+  
   if (item) {
     print_item(item);
   }
 }
 
-void edit_db(tree_t *db) {
+void edit_db(tree_t *db, action_t *undo) {
   item_t *item = choose_item(db, "att ändra");
   if (item == NULL) return;
-  edit_item(db, item, false);
+  edit_item(db, item, false, undo);
 }
 
-void event_loop(tree_t *db) {
+void undo_action(tree_t *db, action_t *undo) {
+  
+  if (undo -> type == NOTHING) {
+    printf("Det finns inget att ångra\n");
+    
+  } else if (undo -> type == ADD) {
+    char *key = undo -> item -> name;
+    tree_remove(db, key);
+    delete_item(undo -> item);
+
+    printf("Du har ångrat att lägga till %s, den är nu borttagen", key);
+    
+    undo -> item = NULL;
+    undo -> type = NOTHING;
+    
+  } else if (undo -> type == REMOVE) {
+    char *key = undo -> item -> name;
+    tree_insert(db, key, undo -> item);
+    
+    printf("Du har ångrat att ta bort %s, den är nu tillbakalagd", key);
+    
+    undo -> item = NULL;
+    undo -> type = NOTHING;
+    
+  } else if (undo -> type == EDIT) {
+    char *key = undo -> item -> name;
+    item_t *olditem = tree_get(db, key);
+    tree_remove(db, key);
+    delete_item(olditem);
+    tree_insert(db, key, undo -> item);
+    
+    printf("Du har ångrat ändringen av %s, den är nu återställd", key);
+
+    undo -> item = NULL;
+    undo -> type = NOTHING;
+  } 
+}
+
+void event_loop(tree_t *db, action_t *undo) {
   while (true) {
     char command = ask_question_menu();
-    item_t *latestItem;
-    item_t *tmp;
+    
     if (command == 'L') {
-      //latestItem =
-      add_item_to_db(db);
+      add_item_to_db(db, undo);
       
     } else if (command == 'T') {
-      tmp = remove_item_from_db(db);
-      if (tmp) {
-        latestItem = tmp;
-      }
+      remove_item_from_db(db, undo);
       
     } else if (command == 'R') {
-      //latestItem =
-      edit_db(db);
+      edit_db(db, undo);
       
     } else if (command == 'G') {
+      undo_action(db, undo);
       
-      //undo();
     } else if (command == 'H') {
       list_db(db);
+      
     } else if (command == 'A'){
       printf("Avslutar\n");
       return; 
@@ -391,10 +503,22 @@ void event_loop(tree_t *db) {
   }
 }
 
+void delete_item_2(char *key, item_t *item) {
+  delete_item(item);
+}
+
 int main(void) {
   println("\nVälkommen till lagerhantering 1.0");
   println("=================================");
   tree_t *db = tree_new();
-  event_loop(db);
-
+  action_t *undo = malloc(sizeof(action_t));
+  if (undo) {
+    undo -> type = NOTHING;
+    undo -> item = NULL;
+  }
+  event_loop(db, undo);
+  
+  free(undo);
+  tree_delete(db, (tree_action) delete_item_2);
 }
+
