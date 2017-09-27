@@ -252,8 +252,8 @@ item_t *edit_item(tree_t *db, item_t *item, bool edit_name, action_t *undo) {
     shelf_t *p = *list_get(list, val);
     p -> amount = ask_question_int("Nytt antal: ");
 
-    while (p -> amount == 0) {
-      printf("Du kan inte lägga till noll varor...\n");
+    while (p -> amount <= 0) {
+      printf("Du måste lägga till minst en vara\n");
       p -> amount = ask_question_int("Antal: ");     
     }
     printf("\nAntal har ändrats\n");
@@ -290,8 +290,8 @@ void add_item_to_db(tree_t *db, action_t *undo) {
     }
     
     amount = ask_question_int("Antal: ");
-    while (amount == 0) {
-      printf("Du kan inte lägga till noll varor...\n");
+    while (amount <= 0) {
+      printf("Du måste lägga till minst en vara\n");
       amount = ask_question_int("Antal: ");     
     }
     
